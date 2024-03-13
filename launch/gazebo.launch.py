@@ -28,4 +28,25 @@ def generate_launch_description():
                      'use_sim_time':True}],
     )
 
-    return LaunchDescription([gazebo_sim, robot, robot_state_publisher])
+    start_controllers  = Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=['joint_state_broadcaster', 'arm_controller', 'gripper_controller'],
+                output="screen",
+            )
+    
+    move_group = IncludeLaunchDescription(join(get_package_share_directory("maciv2_moveit"), "launch", "move_group.launch.py"))
+    rviz = IncludeLaunchDescription(join(get_package_share_directory("maciv2_moveit"), "launch", "moveit_rviz.launch.py"))
+
+        # Gazebo Bridge: This brings data (sensors/clock) out of gazebo into ROS.
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
+                   ],
+        output='screen'  )
+    
+    mg_sim_time = ExecuteProcess(cmd=["ros2", "param", "set", "/move_group", "use_sim_time","True"])
+    rviz_sim_time = ExecuteProcess(cmd=["ros2", "param", "set", "/rviz", "use_sim_time","True"])
+
+    return LaunchDescription([gazebo_sim, robot, robot_state_publisher, start_controllers, move_group, rviz, bridge, mg_sim_time, rviz_sim_time ])
