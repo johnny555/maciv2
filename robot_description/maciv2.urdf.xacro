@@ -16,6 +16,7 @@
     <joint name="gripper_joint" type="fixed">
         <parent link="ur5_tool0" />
         <child link="gripper_base_link" />
+        <origin xyz="0 0 0" rpy="0 ${-pi/2} 0" />
     </joint>
 
     <link name="gripper_base_link">

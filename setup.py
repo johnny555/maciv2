@@ -15,7 +15,7 @@ def create_datafiles():
             (join('share/',  package_name, "config"), glob("config/*.*")),
             ('share/' + package_name, ['package.xml']),
             ]
-    for complex_path in ["robot_description"]:
+    for complex_path in ["robot_description", "maciv2"]:
         res = get_all_files_in_path(glob_string=f"{complex_path}/**/*.*", path_string=join("share",package_name))
         df.extend(res) 
     return df
@@ -35,6 +35,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "gripper = maciv2.maciv2:main",
+            "node = maciv2.simple:main",
+            "moveit = maciv2.moveit:main"
         ],
     },
 )
